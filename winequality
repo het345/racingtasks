@@ -1,0 +1,1318 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "a4233766",
+   "metadata": {
+    "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
+    "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
+    "execution": {
+     "iopub.execute_input": "2023-11-26T17:48:14.986892Z",
+     "iopub.status.busy": "2023-11-26T17:48:14.986231Z",
+     "iopub.status.idle": "2023-11-26T17:48:17.275536Z",
+     "shell.execute_reply": "2023-11-26T17:48:17.274093Z"
+    },
+    "papermill": {
+     "duration": 2.302191,
+     "end_time": "2023-11-26T17:48:17.279498",
+     "exception": false,
+     "start_time": "2023-11-26T17:48:14.977307",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "import seaborn as sns\n",
+    "import matplotlib.pyplot as plt\n",
+    "df = pd.read_csv('../input/wine-quality-dataset/WineQT.csv')\n",
+    "from sklearn.model_selection import train_test_split\n",
+    "from sklearn.metrics import accuracy_score, classification_report, confusion_matrix\n",
+    "from sklearn.linear_model import LogisticRegression\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "7b599aba",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-11-26T17:48:17.296968Z",
+     "iopub.status.busy": "2023-11-26T17:48:17.295835Z",
+     "iopub.status.idle": "2023-11-26T17:48:17.333609Z",
+     "shell.execute_reply": "2023-11-26T17:48:17.332475Z"
+    },
+    "papermill": {
+     "duration": 0.04801,
+     "end_time": "2023-11-26T17:48:17.336184",
+     "exception": false,
+     "start_time": "2023-11-26T17:48:17.288174",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 1143 entries, 0 to 1142\n",
+      "Data columns (total 13 columns):\n",
+      " #   Column                Non-Null Count  Dtype  \n",
+      "---  ------                --------------  -----  \n",
+      " 0   fixed acidity         1143 non-null   float64\n",
+      " 1   volatile acidity      1143 non-null   float64\n",
+      " 2   citric acid           1143 non-null   float64\n",
+      " 3   residual sugar        1143 non-null   float64\n",
+      " 4   chlorides             1143 non-null   float64\n",
+      " 5   free sulfur dioxide   1143 non-null   float64\n",
+      " 6   total sulfur dioxide  1143 non-null   float64\n",
+      " 7   density               1143 non-null   float64\n",
+      " 8   pH                    1143 non-null   float64\n",
+      " 9   sulphates             1143 non-null   float64\n",
+      " 10  alcohol               1143 non-null   float64\n",
+      " 11  quality               1143 non-null   int64  \n",
+      " 12  Id                    1143 non-null   int64  \n",
+      "dtypes: float64(11), int64(2)\n",
+      "memory usage: 116.2 KB\n"
+     ]
+    }
+   ],
+   "source": [
+    "df.info()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "533049ba",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-11-26T17:48:17.351411Z",
+     "iopub.status.busy": "2023-11-26T17:48:17.350708Z",
+     "iopub.status.idle": "2023-11-26T17:48:17.362999Z",
+     "shell.execute_reply": "2023-11-26T17:48:17.361490Z"
+    },
+    "papermill": {
+     "duration": 0.023036,
+     "end_time": "2023-11-26T17:48:17.365827",
+     "exception": false,
+     "start_time": "2023-11-26T17:48:17.342791",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "fixed acidity           0\n",
+       "volatile acidity        0\n",
+       "citric acid             0\n",
+       "residual sugar          0\n",
+       "chlorides               0\n",
+       "free sulfur dioxide     0\n",
+       "total sulfur dioxide    0\n",
+       "density                 0\n",
+       "pH                      0\n",
+       "sulphates               0\n",
+       "alcohol                 0\n",
+       "quality                 0\n",
+       "Id                      0\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.isnull().sum()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "aa146531",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-11-26T17:48:17.381113Z",
+     "iopub.status.busy": "2023-11-26T17:48:17.380454Z",
+     "iopub.status.idle": "2023-11-26T17:48:17.386392Z",
+     "shell.execute_reply": "2023-11-26T17:48:17.385526Z"
+    },
+    "papermill": {
+     "duration": 0.01701,
+     "end_time": "2023-11-26T17:48:17.389309",
+     "exception": false,
+     "start_time": "2023-11-26T17:48:17.372299",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "df.dropna(inplace=True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "6e29466a",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-11-26T17:48:17.405794Z",
+     "iopub.status.busy": "2023-11-26T17:48:17.405056Z",
+     "iopub.status.idle": "2023-11-26T17:48:17.437277Z",
+     "shell.execute_reply": "2023-11-26T17:48:17.436074Z"
+    },
+    "papermill": {
+     "duration": 0.043679,
+     "end_time": "2023-11-26T17:48:17.439968",
+     "exception": false,
+     "start_time": "2023-11-26T17:48:17.396289",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>fixed acidity</th>\n",
+       "      <th>volatile acidity</th>\n",
+       "      <th>citric acid</th>\n",
+       "      <th>residual sugar</th>\n",
+       "      <th>chlorides</th>\n",
+       "      <th>free sulfur dioxide</th>\n",
+       "      <th>total sulfur dioxide</th>\n",
+       "      <th>density</th>\n",
+       "      <th>pH</th>\n",
+       "      <th>sulphates</th>\n",
+       "      <th>alcohol</th>\n",
+       "      <th>quality</th>\n",
+       "      <th>Id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>7.4</td>\n",
+       "      <td>0.70</td>\n",
+       "      <td>0.00</td>\n",
+       "      <td>1.9</td>\n",
+       "      <td>0.076</td>\n",
+       "      <td>11.0</td>\n",
+       "      <td>34.0</td>\n",
+       "      <td>0.9978</td>\n",
+       "      <td>3.51</td>\n",
+       "      <td>0.56</td>\n",
+       "      <td>9.4</td>\n",
+       "      <td>5</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>7.8</td>\n",
+       "      <td>0.88</td>\n",
+       "      <td>0.00</td>\n",
+       "      <td>2.6</td>\n",
+       "      <td>0.098</td>\n",
+       "      <td>25.0</td>\n",
+       "      <td>67.0</td>\n",
+       "      <td>0.9968</td>\n",
+       "      <td>3.20</td>\n",
+       "      <td>0.68</td>\n",
+       "      <td>9.8</td>\n",
+       "      <td>5</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>7.8</td>\n",
+       "      <td>0.76</td>\n",
+       "      <td>0.04</td>\n",
+       "      <td>2.3</td>\n",
+       "      <td>0.092</td>\n",
+       "      <td>15.0</td>\n",
+       "      <td>54.0</td>\n",
+       "      <td>0.9970</td>\n",
+       "      <td>3.26</td>\n",
+       "      <td>0.65</td>\n",
+       "      <td>9.8</td>\n",
+       "      <td>5</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>11.2</td>\n",
+       "      <td>0.28</td>\n",
+       "      <td>0.56</td>\n",
+       "      <td>1.9</td>\n",
+       "      <td>0.075</td>\n",
+       "      <td>17.0</td>\n",
+       "      <td>60.0</td>\n",
+       "      <td>0.9980</td>\n",
+       "      <td>3.16</td>\n",
+       "      <td>0.58</td>\n",
+       "      <td>9.8</td>\n",
+       "      <td>6</td>\n",
+       "      <td>3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>7.4</td>\n",
+       "      <td>0.70</td>\n",
+       "      <td>0.00</td>\n",
+       "      <td>1.9</td>\n",
+       "      <td>0.076</td>\n",
+       "      <td>11.0</td>\n",
+       "      <td>34.0</td>\n",
+       "      <td>0.9978</td>\n",
+       "      <td>3.51</td>\n",
+       "      <td>0.56</td>\n",
+       "      <td>9.4</td>\n",
+       "      <td>5</td>\n",
+       "      <td>4</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>7.4</td>\n",
+       "      <td>0.66</td>\n",
+       "      <td>0.00</td>\n",
+       "      <td>1.8</td>\n",
+       "      <td>0.075</td>\n",
+       "      <td>13.0</td>\n",
+       "      <td>40.0</td>\n",
+       "      <td>0.9978</td>\n",
+       "      <td>3.51</td>\n",
+       "      <td>0.56</td>\n",
+       "      <td>9.4</td>\n",
+       "      <td>5</td>\n",
+       "      <td>5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>7.9</td>\n",
+       "      <td>0.60</td>\n",
+       "      <td>0.06</td>\n",
+       "      <td>1.6</td>\n",
+       "      <td>0.069</td>\n",
+       "      <td>15.0</td>\n",
+       "      <td>59.0</td>\n",
+       "      <td>0.9964</td>\n",
+       "      <td>3.30</td>\n",
+       "      <td>0.46</td>\n",
+       "      <td>9.4</td>\n",
+       "      <td>5</td>\n",
+       "      <td>6</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>7.3</td>\n",
+       "      <td>0.65</td>\n",
+       "      <td>0.00</td>\n",
+       "      <td>1.2</td>\n",
+       "      <td>0.065</td>\n",
+       "      <td>15.0</td>\n",
+       "      <td>21.0</td>\n",
+       "      <td>0.9946</td>\n",
+       "      <td>3.39</td>\n",
+       "      <td>0.47</td>\n",
+       "      <td>10.0</td>\n",
+       "      <td>7</td>\n",
+       "      <td>7</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>7.8</td>\n",
+       "      <td>0.58</td>\n",
+       "      <td>0.02</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>0.073</td>\n",
+       "      <td>9.0</td>\n",
+       "      <td>18.0</td>\n",
+       "      <td>0.9968</td>\n",
+       "      <td>3.36</td>\n",
+       "      <td>0.57</td>\n",
+       "      <td>9.5</td>\n",
+       "      <td>7</td>\n",
+       "      <td>8</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>6.7</td>\n",
+       "      <td>0.58</td>\n",
+       "      <td>0.08</td>\n",
+       "      <td>1.8</td>\n",
+       "      <td>0.097</td>\n",
+       "      <td>15.0</td>\n",
+       "      <td>65.0</td>\n",
+       "      <td>0.9959</td>\n",
+       "      <td>3.28</td>\n",
+       "      <td>0.54</td>\n",
+       "      <td>9.2</td>\n",
+       "      <td>5</td>\n",
+       "      <td>10</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   fixed acidity  volatile acidity  citric acid  residual sugar  chlorides  \\\n",
+       "0            7.4              0.70         0.00             1.9      0.076   \n",
+       "1            7.8              0.88         0.00             2.6      0.098   \n",
+       "2            7.8              0.76         0.04             2.3      0.092   \n",
+       "3           11.2              0.28         0.56             1.9      0.075   \n",
+       "4            7.4              0.70         0.00             1.9      0.076   \n",
+       "5            7.4              0.66         0.00             1.8      0.075   \n",
+       "6            7.9              0.60         0.06             1.6      0.069   \n",
+       "7            7.3              0.65         0.00             1.2      0.065   \n",
+       "8            7.8              0.58         0.02             2.0      0.073   \n",
+       "9            6.7              0.58         0.08             1.8      0.097   \n",
+       "\n",
+       "   free sulfur dioxide  total sulfur dioxide  density    pH  sulphates  \\\n",
+       "0                 11.0                  34.0   0.9978  3.51       0.56   \n",
+       "1                 25.0                  67.0   0.9968  3.20       0.68   \n",
+       "2                 15.0                  54.0   0.9970  3.26       0.65   \n",
+       "3                 17.0                  60.0   0.9980  3.16       0.58   \n",
+       "4                 11.0                  34.0   0.9978  3.51       0.56   \n",
+       "5                 13.0                  40.0   0.9978  3.51       0.56   \n",
+       "6                 15.0                  59.0   0.9964  3.30       0.46   \n",
+       "7                 15.0                  21.0   0.9946  3.39       0.47   \n",
+       "8                  9.0                  18.0   0.9968  3.36       0.57   \n",
+       "9                 15.0                  65.0   0.9959  3.28       0.54   \n",
+       "\n",
+       "   alcohol  quality  Id  \n",
+       "0      9.4        5   0  \n",
+       "1      9.8        5   1  \n",
+       "2      9.8        5   2  \n",
+       "3      9.8        6   3  \n",
+       "4      9.4        5   4  \n",
+       "5      9.4        5   5  \n",
+       "6      9.4        5   6  \n",
+       "7     10.0        7   7  \n",
+       "8      9.5        7   8  \n",
+       "9      9.2        5  10  "
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.head(10)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "bb4d14c5",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-11-26T17:48:17.457091Z",
+     "iopub.status.busy": "2023-11-26T17:48:17.456678Z",
+     "iopub.status.idle": "2023-11-26T17:48:17.485309Z",
+     "shell.execute_reply": "2023-11-26T17:48:17.483952Z"
+    },
+    "papermill": {
+     "duration": 0.041177,
+     "end_time": "2023-11-26T17:48:17.488895",
+     "exception": false,
+     "start_time": "2023-11-26T17:48:17.447718",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>fixed acidity</th>\n",
+       "      <th>volatile acidity</th>\n",
+       "      <th>citric acid</th>\n",
+       "      <th>residual sugar</th>\n",
+       "      <th>chlorides</th>\n",
+       "      <th>free sulfur dioxide</th>\n",
+       "      <th>total sulfur dioxide</th>\n",
+       "      <th>density</th>\n",
+       "      <th>pH</th>\n",
+       "      <th>sulphates</th>\n",
+       "      <th>alcohol</th>\n",
+       "      <th>quality</th>\n",
+       "      <th>Id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>fixed acidity</th>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>-0.250728</td>\n",
+       "      <td>0.673157</td>\n",
+       "      <td>0.171831</td>\n",
+       "      <td>0.107889</td>\n",
+       "      <td>-0.164831</td>\n",
+       "      <td>-0.110628</td>\n",
+       "      <td>0.681501</td>\n",
+       "      <td>-0.685163</td>\n",
+       "      <td>0.174592</td>\n",
+       "      <td>-0.075055</td>\n",
+       "      <td>0.121970</td>\n",
+       "      <td>-0.275826</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>volatile acidity</th>\n",
+       "      <td>-0.250728</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>-0.544187</td>\n",
+       "      <td>-0.005751</td>\n",
+       "      <td>0.056336</td>\n",
+       "      <td>-0.001962</td>\n",
+       "      <td>0.077748</td>\n",
+       "      <td>0.016512</td>\n",
+       "      <td>0.221492</td>\n",
+       "      <td>-0.276079</td>\n",
+       "      <td>-0.203909</td>\n",
+       "      <td>-0.407394</td>\n",
+       "      <td>-0.007892</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>citric acid</th>\n",
+       "      <td>0.673157</td>\n",
+       "      <td>-0.544187</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.175815</td>\n",
+       "      <td>0.245312</td>\n",
+       "      <td>-0.057589</td>\n",
+       "      <td>0.036871</td>\n",
+       "      <td>0.375243</td>\n",
+       "      <td>-0.546339</td>\n",
+       "      <td>0.331232</td>\n",
+       "      <td>0.106250</td>\n",
+       "      <td>0.240821</td>\n",
+       "      <td>-0.139011</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>residual sugar</th>\n",
+       "      <td>0.171831</td>\n",
+       "      <td>-0.005751</td>\n",
+       "      <td>0.175815</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.070863</td>\n",
+       "      <td>0.165339</td>\n",
+       "      <td>0.190790</td>\n",
+       "      <td>0.380147</td>\n",
+       "      <td>-0.116959</td>\n",
+       "      <td>0.017475</td>\n",
+       "      <td>0.058421</td>\n",
+       "      <td>0.022002</td>\n",
+       "      <td>-0.046344</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>chlorides</th>\n",
+       "      <td>0.107889</td>\n",
+       "      <td>0.056336</td>\n",
+       "      <td>0.245312</td>\n",
+       "      <td>0.070863</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.015280</td>\n",
+       "      <td>0.048163</td>\n",
+       "      <td>0.208901</td>\n",
+       "      <td>-0.277759</td>\n",
+       "      <td>0.374784</td>\n",
+       "      <td>-0.229917</td>\n",
+       "      <td>-0.124085</td>\n",
+       "      <td>-0.088099</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>free sulfur dioxide</th>\n",
+       "      <td>-0.164831</td>\n",
+       "      <td>-0.001962</td>\n",
+       "      <td>-0.057589</td>\n",
+       "      <td>0.165339</td>\n",
+       "      <td>0.015280</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.661093</td>\n",
+       "      <td>-0.054150</td>\n",
+       "      <td>0.072804</td>\n",
+       "      <td>0.034445</td>\n",
+       "      <td>-0.047095</td>\n",
+       "      <td>-0.063260</td>\n",
+       "      <td>0.095268</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>total sulfur dioxide</th>\n",
+       "      <td>-0.110628</td>\n",
+       "      <td>0.077748</td>\n",
+       "      <td>0.036871</td>\n",
+       "      <td>0.190790</td>\n",
+       "      <td>0.048163</td>\n",
+       "      <td>0.661093</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.050175</td>\n",
+       "      <td>-0.059126</td>\n",
+       "      <td>0.026894</td>\n",
+       "      <td>-0.188165</td>\n",
+       "      <td>-0.183339</td>\n",
+       "      <td>-0.107389</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>density</th>\n",
+       "      <td>0.681501</td>\n",
+       "      <td>0.016512</td>\n",
+       "      <td>0.375243</td>\n",
+       "      <td>0.380147</td>\n",
+       "      <td>0.208901</td>\n",
+       "      <td>-0.054150</td>\n",
+       "      <td>0.050175</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>-0.352775</td>\n",
+       "      <td>0.143139</td>\n",
+       "      <td>-0.494727</td>\n",
+       "      <td>-0.175208</td>\n",
+       "      <td>-0.363926</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>pH</th>\n",
+       "      <td>-0.685163</td>\n",
+       "      <td>0.221492</td>\n",
+       "      <td>-0.546339</td>\n",
+       "      <td>-0.116959</td>\n",
+       "      <td>-0.277759</td>\n",
+       "      <td>0.072804</td>\n",
+       "      <td>-0.059126</td>\n",
+       "      <td>-0.352775</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>-0.185499</td>\n",
+       "      <td>0.225322</td>\n",
+       "      <td>-0.052453</td>\n",
+       "      <td>0.132904</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>sulphates</th>\n",
+       "      <td>0.174592</td>\n",
+       "      <td>-0.276079</td>\n",
+       "      <td>0.331232</td>\n",
+       "      <td>0.017475</td>\n",
+       "      <td>0.374784</td>\n",
+       "      <td>0.034445</td>\n",
+       "      <td>0.026894</td>\n",
+       "      <td>0.143139</td>\n",
+       "      <td>-0.185499</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.094421</td>\n",
+       "      <td>0.257710</td>\n",
+       "      <td>-0.103954</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>alcohol</th>\n",
+       "      <td>-0.075055</td>\n",
+       "      <td>-0.203909</td>\n",
+       "      <td>0.106250</td>\n",
+       "      <td>0.058421</td>\n",
+       "      <td>-0.229917</td>\n",
+       "      <td>-0.047095</td>\n",
+       "      <td>-0.188165</td>\n",
+       "      <td>-0.494727</td>\n",
+       "      <td>0.225322</td>\n",
+       "      <td>0.094421</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.484866</td>\n",
+       "      <td>0.238087</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>quality</th>\n",
+       "      <td>0.121970</td>\n",
+       "      <td>-0.407394</td>\n",
+       "      <td>0.240821</td>\n",
+       "      <td>0.022002</td>\n",
+       "      <td>-0.124085</td>\n",
+       "      <td>-0.063260</td>\n",
+       "      <td>-0.183339</td>\n",
+       "      <td>-0.175208</td>\n",
+       "      <td>-0.052453</td>\n",
+       "      <td>0.257710</td>\n",
+       "      <td>0.484866</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.069708</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Id</th>\n",
+       "      <td>-0.275826</td>\n",
+       "      <td>-0.007892</td>\n",
+       "      <td>-0.139011</td>\n",
+       "      <td>-0.046344</td>\n",
+       "      <td>-0.088099</td>\n",
+       "      <td>0.095268</td>\n",
+       "      <td>-0.107389</td>\n",
+       "      <td>-0.363926</td>\n",
+       "      <td>0.132904</td>\n",
+       "      <td>-0.103954</td>\n",
+       "      <td>0.238087</td>\n",
+       "      <td>0.069708</td>\n",
+       "      <td>1.000000</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                      fixed acidity  volatile acidity  citric acid  \\\n",
+       "fixed acidity              1.000000         -0.250728     0.673157   \n",
+       "volatile acidity          -0.250728          1.000000    -0.544187   \n",
+       "citric acid                0.673157         -0.544187     1.000000   \n",
+       "residual sugar             0.171831         -0.005751     0.175815   \n",
+       "chlorides                  0.107889          0.056336     0.245312   \n",
+       "free sulfur dioxide       -0.164831         -0.001962    -0.057589   \n",
+       "total sulfur dioxide      -0.110628          0.077748     0.036871   \n",
+       "density                    0.681501          0.016512     0.375243   \n",
+       "pH                        -0.685163          0.221492    -0.546339   \n",
+       "sulphates                  0.174592         -0.276079     0.331232   \n",
+       "alcohol                   -0.075055         -0.203909     0.106250   \n",
+       "quality                    0.121970         -0.407394     0.240821   \n",
+       "Id                        -0.275826         -0.007892    -0.139011   \n",
+       "\n",
+       "                      residual sugar  chlorides  free sulfur dioxide  \\\n",
+       "fixed acidity               0.171831   0.107889            -0.164831   \n",
+       "volatile acidity           -0.005751   0.056336            -0.001962   \n",
+       "citric acid                 0.175815   0.245312            -0.057589   \n",
+       "residual sugar              1.000000   0.070863             0.165339   \n",
+       "chlorides                   0.070863   1.000000             0.015280   \n",
+       "free sulfur dioxide         0.165339   0.015280             1.000000   \n",
+       "total sulfur dioxide        0.190790   0.048163             0.661093   \n",
+       "density                     0.380147   0.208901            -0.054150   \n",
+       "pH                         -0.116959  -0.277759             0.072804   \n",
+       "sulphates                   0.017475   0.374784             0.034445   \n",
+       "alcohol                     0.058421  -0.229917            -0.047095   \n",
+       "quality                     0.022002  -0.124085            -0.063260   \n",
+       "Id                         -0.046344  -0.088099             0.095268   \n",
+       "\n",
+       "                      total sulfur dioxide   density        pH  sulphates  \\\n",
+       "fixed acidity                    -0.110628  0.681501 -0.685163   0.174592   \n",
+       "volatile acidity                  0.077748  0.016512  0.221492  -0.276079   \n",
+       "citric acid                       0.036871  0.375243 -0.546339   0.331232   \n",
+       "residual sugar                    0.190790  0.380147 -0.116959   0.017475   \n",
+       "chlorides                         0.048163  0.208901 -0.277759   0.374784   \n",
+       "free sulfur dioxide               0.661093 -0.054150  0.072804   0.034445   \n",
+       "total sulfur dioxide              1.000000  0.050175 -0.059126   0.026894   \n",
+       "density                           0.050175  1.000000 -0.352775   0.143139   \n",
+       "pH                               -0.059126 -0.352775  1.000000  -0.185499   \n",
+       "sulphates                         0.026894  0.143139 -0.185499   1.000000   \n",
+       "alcohol                          -0.188165 -0.494727  0.225322   0.094421   \n",
+       "quality                          -0.183339 -0.175208 -0.052453   0.257710   \n",
+       "Id                               -0.107389 -0.363926  0.132904  -0.103954   \n",
+       "\n",
+       "                       alcohol   quality        Id  \n",
+       "fixed acidity        -0.075055  0.121970 -0.275826  \n",
+       "volatile acidity     -0.203909 -0.407394 -0.007892  \n",
+       "citric acid           0.106250  0.240821 -0.139011  \n",
+       "residual sugar        0.058421  0.022002 -0.046344  \n",
+       "chlorides            -0.229917 -0.124085 -0.088099  \n",
+       "free sulfur dioxide  -0.047095 -0.063260  0.095268  \n",
+       "total sulfur dioxide -0.188165 -0.183339 -0.107389  \n",
+       "density              -0.494727 -0.175208 -0.363926  \n",
+       "pH                    0.225322 -0.052453  0.132904  \n",
+       "sulphates             0.094421  0.257710 -0.103954  \n",
+       "alcohol               1.000000  0.484866  0.238087  \n",
+       "quality               0.484866  1.000000  0.069708  \n",
+       "Id                    0.238087  0.069708  1.000000  "
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.corr()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "3be5d453",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-11-26T17:48:17.506805Z",
+     "iopub.status.busy": "2023-11-26T17:48:17.506005Z",
+     "iopub.status.idle": "2023-11-26T17:48:17.514876Z",
+     "shell.execute_reply": "2023-11-26T17:48:17.513853Z"
+    },
+    "papermill": {
+     "duration": 0.020851,
+     "end_time": "2023-11-26T17:48:17.517289",
+     "exception": false,
+     "start_time": "2023-11-26T17:48:17.496438",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "df = df.drop(columns=['volatile acidity', 'free sulfur dioxide', 'total sulfur dioxide', 'total sulfur dioxide', 'density', 'pH','Id'], axis=1)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "a9ba681a",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-11-26T17:48:17.535036Z",
+     "iopub.status.busy": "2023-11-26T17:48:17.533719Z",
+     "iopub.status.idle": "2023-11-26T17:48:17.550733Z",
+     "shell.execute_reply": "2023-11-26T17:48:17.549618Z"
+    },
+    "papermill": {
+     "duration": 0.028878,
+     "end_time": "2023-11-26T17:48:17.553650",
+     "exception": false,
+     "start_time": "2023-11-26T17:48:17.524772",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>fixed acidity</th>\n",
+       "      <th>citric acid</th>\n",
+       "      <th>residual sugar</th>\n",
+       "      <th>chlorides</th>\n",
+       "      <th>sulphates</th>\n",
+       "      <th>alcohol</th>\n",
+       "      <th>quality</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>7.4</td>\n",
+       "      <td>0.00</td>\n",
+       "      <td>1.9</td>\n",
+       "      <td>0.076</td>\n",
+       "      <td>0.56</td>\n",
+       "      <td>9.4</td>\n",
+       "      <td>5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>7.8</td>\n",
+       "      <td>0.00</td>\n",
+       "      <td>2.6</td>\n",
+       "      <td>0.098</td>\n",
+       "      <td>0.68</td>\n",
+       "      <td>9.8</td>\n",
+       "      <td>5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>7.8</td>\n",
+       "      <td>0.04</td>\n",
+       "      <td>2.3</td>\n",
+       "      <td>0.092</td>\n",
+       "      <td>0.65</td>\n",
+       "      <td>9.8</td>\n",
+       "      <td>5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>11.2</td>\n",
+       "      <td>0.56</td>\n",
+       "      <td>1.9</td>\n",
+       "      <td>0.075</td>\n",
+       "      <td>0.58</td>\n",
+       "      <td>9.8</td>\n",
+       "      <td>6</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>7.4</td>\n",
+       "      <td>0.00</td>\n",
+       "      <td>1.9</td>\n",
+       "      <td>0.076</td>\n",
+       "      <td>0.56</td>\n",
+       "      <td>9.4</td>\n",
+       "      <td>5</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   fixed acidity  citric acid  residual sugar  chlorides  sulphates  alcohol  \\\n",
+       "0            7.4         0.00             1.9      0.076       0.56      9.4   \n",
+       "1            7.8         0.00             2.6      0.098       0.68      9.8   \n",
+       "2            7.8         0.04             2.3      0.092       0.65      9.8   \n",
+       "3           11.2         0.56             1.9      0.075       0.58      9.8   \n",
+       "4            7.4         0.00             1.9      0.076       0.56      9.4   \n",
+       "\n",
+       "   quality  \n",
+       "0        5  \n",
+       "1        5  \n",
+       "2        5  \n",
+       "3        6  \n",
+       "4        5  "
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "3fe9f83c",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-11-26T17:48:17.574023Z",
+     "iopub.status.busy": "2023-11-26T17:48:17.573530Z",
+     "iopub.status.idle": "2023-11-26T17:48:17.580684Z",
+     "shell.execute_reply": "2023-11-26T17:48:17.579461Z"
+    },
+    "papermill": {
+     "duration": 0.020949,
+     "end_time": "2023-11-26T17:48:17.583266",
+     "exception": false,
+     "start_time": "2023-11-26T17:48:17.562317",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "y=df['quality']\n",
+    "X = df[['fixed acidity', 'citric acid', 'residual sugar', 'chlorides', 'sulphates', 'alcohol']]\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "81b6501c",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-11-26T17:48:17.602692Z",
+     "iopub.status.busy": "2023-11-26T17:48:17.601533Z",
+     "iopub.status.idle": "2023-11-26T17:48:17.610124Z",
+     "shell.execute_reply": "2023-11-26T17:48:17.609080Z"
+    },
+    "papermill": {
+     "duration": 0.021488,
+     "end_time": "2023-11-26T17:48:17.612959",
+     "exception": false,
+     "start_time": "2023-11-26T17:48:17.591471",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,random_state=2)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "d81e9589",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-11-26T17:48:17.633090Z",
+     "iopub.status.busy": "2023-11-26T17:48:17.631790Z",
+     "iopub.status.idle": "2023-11-26T17:48:17.638136Z",
+     "shell.execute_reply": "2023-11-26T17:48:17.636986Z"
+    },
+    "papermill": {
+     "duration": 0.019236,
+     "end_time": "2023-11-26T17:48:17.640851",
+     "exception": false,
+     "start_time": "2023-11-26T17:48:17.621615",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "model=LogisticRegression()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "40cd877d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-11-26T17:48:17.659681Z",
+     "iopub.status.busy": "2023-11-26T17:48:17.659223Z",
+     "iopub.status.idle": "2023-11-26T17:48:17.728239Z",
+     "shell.execute_reply": "2023-11-26T17:48:17.726623Z"
+    },
+    "papermill": {
+     "duration": 0.082225,
+     "end_time": "2023-11-26T17:48:17.731438",
+     "exception": false,
+     "start_time": "2023-11-26T17:48:17.649213",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/opt/conda/lib/python3.10/site-packages/sklearn/linear_model/_logistic.py:458: ConvergenceWarning: lbfgs failed to converge (status=1):\n",
+      "STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.\n",
+      "\n",
+      "Increase the number of iterations (max_iter) or scale the data as shown in:\n",
+      "    https://scikit-learn.org/stable/modules/preprocessing.html\n",
+      "Please also refer to the documentation for alternative solver options:\n",
+      "    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression\n",
+      "  n_iter_i = _check_optimize_result(\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<style>#sk-container-id-1 {color: black;background-color: white;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: \"▸\";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: \"▾\";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: \"\";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: \"\";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: \"\";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id=\"sk-container-id-1\" class=\"sk-top-container\"><div class=\"sk-text-repr-fallback\"><pre>LogisticRegression()</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class=\"sk-container\" hidden><div class=\"sk-item\"><div class=\"sk-estimator sk-toggleable\"><input class=\"sk-toggleable__control sk-hidden--visually\" id=\"sk-estimator-id-1\" type=\"checkbox\" checked><label for=\"sk-estimator-id-1\" class=\"sk-toggleable__label sk-toggleable__label-arrow\">LogisticRegression</label><div class=\"sk-toggleable__content\"><pre>LogisticRegression()</pre></div></div></div></div></div>"
+      ],
+      "text/plain": [
+       "LogisticRegression()"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "model.fit(X_train,y_train)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "af280ebf",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-11-26T17:48:17.750674Z",
+     "iopub.status.busy": "2023-11-26T17:48:17.750267Z",
+     "iopub.status.idle": "2023-11-26T17:48:17.763878Z",
+     "shell.execute_reply": "2023-11-26T17:48:17.762630Z"
+    },
+    "papermill": {
+     "duration": 0.026872,
+     "end_time": "2023-11-26T17:48:17.766901",
+     "exception": false,
+     "start_time": "2023-11-26T17:48:17.740029",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([6, 5, 6, 6, 5, 6, 5, 5, 6, 5, 5, 6, 5, 6, 5, 5, 7, 5, 5, 6, 7, 6,\n",
+       "       5, 6, 5, 6, 5, 5, 6, 5, 5, 5, 6, 5, 5, 5, 6, 6, 5, 5, 6, 5, 7, 6,\n",
+       "       5, 6, 6, 7, 6, 5, 6, 6, 6, 5, 6, 5, 5, 5, 5, 6, 6, 5, 5, 5, 6, 6,\n",
+       "       6, 6, 5, 5, 5, 6, 6, 5, 6, 5, 5, 6, 5, 5, 6, 6, 6, 5, 6, 5, 5, 6,\n",
+       "       5, 6, 5, 5, 6, 6, 6, 5, 5, 6, 6, 5, 5, 5, 6, 6, 5, 5, 7, 6, 5, 5,\n",
+       "       5, 6, 5, 6, 6, 7, 5, 6, 5, 6, 6, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5,\n",
+       "       5, 5, 6, 6, 5, 5, 6, 6, 6, 5, 6, 5, 6, 5, 6, 5, 5, 5, 6, 6, 6, 5,\n",
+       "       5, 6, 6, 5, 6, 6, 6, 5, 6, 5, 5, 5, 6, 5, 6, 6, 6, 6, 6, 7, 6, 6,\n",
+       "       5, 5, 6, 6, 5, 6, 6, 5, 6, 6, 5, 5, 6, 5, 6, 6, 5, 5, 6, 5, 6, 6,\n",
+       "       6, 5, 5, 6, 5, 5, 5, 6, 5, 7, 5, 6, 7, 6, 6, 5, 5, 5, 5, 7, 5, 6,\n",
+       "       5, 6, 6, 6, 6, 5, 6, 6, 5, 5, 7, 5, 6, 5, 5, 6, 6, 6, 5, 6, 5, 5,\n",
+       "       5, 6, 5, 5, 5, 5, 6, 5, 6, 5, 5, 7, 5, 5, 6, 7, 5, 6, 5, 5, 5, 5,\n",
+       "       5, 6, 5, 5, 6, 5, 5, 5, 5, 6, 5, 5, 5, 5, 6, 5, 5, 6, 5, 6, 6, 5,\n",
+       "       6, 5, 6, 6, 5, 6, 6, 6, 5, 7, 7, 5, 5, 6, 5, 5, 5, 6, 6, 5, 5, 6,\n",
+       "       6, 6, 5, 6, 5, 5, 6, 6, 5, 5, 7, 6, 6, 5, 6, 6, 6, 6, 6, 5, 5, 6,\n",
+       "       6, 5, 6, 5, 6, 5, 6, 5, 6, 6, 7, 7, 5, 5, 6, 6, 6, 5, 5, 5, 6, 6,\n",
+       "       6, 6, 6, 6, 7, 5, 6, 5, 6, 5, 6, 6, 5, 5, 5, 7, 6, 6, 5, 6, 5, 5,\n",
+       "       6, 6, 5, 6, 5, 5, 7, 6, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, 6, 5, 6, 6,\n",
+       "       6, 6, 5, 5, 6, 6, 5, 5, 6, 5, 6, 5, 5, 5, 5, 6, 6, 5, 5, 5, 5, 5,\n",
+       "       5, 5, 6, 5, 6, 6, 6, 6, 6, 6, 6, 5, 5, 5, 7, 5, 6, 5, 6, 7, 6, 5,\n",
+       "       5, 6, 5, 6, 5, 6, 6, 7, 7, 5, 6, 6, 5, 5, 5, 5, 5, 7, 5, 5, 5, 5,\n",
+       "       6, 6, 6, 5, 6, 5, 5, 5, 5, 6, 5, 5, 6, 5, 5, 6, 5, 6, 6, 5, 5, 6,\n",
+       "       7, 5, 5, 5, 5, 5, 5, 5, 6, 5, 5, 6, 6, 6, 5, 6, 6, 5, 5, 6, 6, 6,\n",
+       "       6, 7, 5, 6, 6, 5, 6, 6, 5, 6, 5, 6, 6, 5, 6, 5, 5, 5, 5, 5, 6, 5,\n",
+       "       6, 5, 5, 5, 5, 6, 6, 6, 5, 5, 5, 6, 6, 5, 5, 5, 5, 6, 5, 6, 5, 7,\n",
+       "       6, 5, 5, 5, 5, 5, 6, 5, 5, 7, 6, 5, 7, 5, 5, 7, 5, 5, 7, 6, 6, 6,\n",
+       "       5, 5, 5, 6, 5, 5, 5, 6, 5, 6, 6, 6, 5, 5, 5, 5, 5, 6, 5, 6, 6, 6,\n",
+       "       6, 5, 5, 5, 6, 5, 5, 5, 5, 5, 6, 5, 6, 5, 5, 5, 7, 5, 5, 5, 5, 6,\n",
+       "       5, 5, 6, 5, 5, 5, 6, 5, 5, 5, 6, 5, 5, 6, 5, 6, 5, 6, 6, 5, 6, 5,\n",
+       "       6, 5, 5, 7, 6, 6, 5, 5, 6, 6, 6, 5, 6, 5, 5, 5, 6, 5, 5, 6, 5, 6,\n",
+       "       5, 6, 5, 5, 5, 5, 6, 6, 5, 5, 6, 6, 6, 6, 6, 6, 5, 5, 5, 6, 5, 6,\n",
+       "       6, 6, 6, 5, 7, 5, 5, 5, 5, 5, 6, 5, 6, 6, 6, 5, 5, 6, 6, 5, 6, 6,\n",
+       "       6, 5, 6, 6, 6, 5, 5, 6, 6, 6, 6, 5, 5, 5, 5, 5, 6, 6, 6, 6, 5, 5,\n",
+       "       6, 7, 5, 6, 5, 5, 6, 5, 6, 6, 6, 5, 5, 6, 5, 6, 5, 5, 6, 5, 5, 5,\n",
+       "       6, 6, 6, 5, 5, 5, 6, 5, 5, 6, 5, 6, 5, 5, 5, 5, 5, 5, 5, 7, 5, 5,\n",
+       "       6, 5, 5, 6, 6, 6, 5, 5, 5, 6, 7, 5, 6, 5, 5, 5, 5, 5, 6, 5, 6, 5,\n",
+       "       6, 7, 6, 6, 6, 5, 6, 6, 5, 6, 5, 5, 5, 5, 6, 6, 6, 6, 6, 5, 5, 6,\n",
+       "       7, 6, 5, 5, 6, 6, 5, 6, 5, 5, 5, 6, 5, 6, 6, 5, 6, 6, 5, 5, 5, 5,\n",
+       "       6, 5, 6, 6, 6, 6, 5, 5, 6, 6, 6, 6, 5, 6, 5, 6, 6, 6, 5, 6, 5, 6,\n",
+       "       5, 5, 5, 6, 6, 6, 5, 6, 7, 5, 6, 5, 5, 5, 6, 7, 6, 7, 6, 5, 5, 5,\n",
+       "       5, 6, 5, 5, 5, 5, 6, 5, 5, 5, 5, 6, 7, 6, 6, 6, 5, 5, 5, 6, 6, 6,\n",
+       "       5, 5, 5, 5, 5, 6, 5, 6, 5, 6, 6, 5])"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "X_train_predict=model.predict(X_train)\n",
+    "X_train_predict"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "8e84d4d6",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-11-26T17:48:17.786877Z",
+     "iopub.status.busy": "2023-11-26T17:48:17.786379Z",
+     "iopub.status.idle": "2023-11-26T17:48:17.798888Z",
+     "shell.execute_reply": "2023-11-26T17:48:17.797338Z"
+    },
+    "papermill": {
+     "duration": 0.026445,
+     "end_time": "2023-11-26T17:48:17.802234",
+     "exception": false,
+     "start_time": "2023-11-26T17:48:17.775789",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([6, 6, 5, 5, 6, 5, 6, 5, 7, 5, 5, 5, 5, 6, 5, 5, 5, 6, 5, 7, 7, 6,\n",
+       "       6, 5, 5, 6, 6, 5, 5, 5, 6, 5, 5, 6, 5, 5, 5, 5, 5, 6, 5, 5, 6, 5,\n",
+       "       5, 6, 5, 5, 6, 5, 6, 5, 5, 6, 6, 6, 5, 5, 5, 6, 6, 5, 6, 5, 5, 5,\n",
+       "       6, 5, 6, 5, 6, 5, 6, 5, 6, 5, 6, 7, 6, 6, 5, 5, 5, 5, 5, 5, 6, 5,\n",
+       "       5, 6, 5, 6, 6, 5, 5, 7, 5, 6, 5, 5, 5, 6, 6, 5, 6, 5, 6, 5, 6, 5,\n",
+       "       5, 6, 6, 5, 6, 6, 7, 5, 5, 6, 5, 7, 7, 5, 6, 6, 5, 7, 6, 5, 5, 6,\n",
+       "       7, 5, 5, 5, 6, 6, 5, 5, 6, 6, 5, 5, 6, 5, 5, 6, 5, 5, 5, 5, 7, 6,\n",
+       "       5, 5, 5, 7, 5, 5, 5, 5, 5, 6, 5, 5, 6, 5, 5, 5, 6, 6, 6, 6, 7, 6,\n",
+       "       5, 5, 5, 6, 5, 5, 6, 5, 6, 5, 5, 6, 5, 5, 5, 6, 5, 6, 5, 6, 6, 5,\n",
+       "       6, 6, 5, 5, 5, 5, 6, 7, 6, 6, 6, 5, 6, 5, 5, 6, 5, 6, 5, 5, 6, 6,\n",
+       "       6, 5, 5, 6, 5, 5, 5, 5, 5])"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "X_test_predict=model.predict(X_test)\n",
+    "X_test_predict"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "b990bb41",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-11-26T17:48:17.823811Z",
+     "iopub.status.busy": "2023-11-26T17:48:17.823301Z",
+     "iopub.status.idle": "2023-11-26T17:48:17.831128Z",
+     "shell.execute_reply": "2023-11-26T17:48:17.829814Z"
+    },
+    "papermill": {
+     "duration": 0.021874,
+     "end_time": "2023-11-26T17:48:17.833849",
+     "exception": false,
+     "start_time": "2023-11-26T17:48:17.811975",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "accuracy is 0.5929978118161926\n"
+     ]
+    }
+   ],
+   "source": [
+    "\n",
+    "training_data_acc=accuracy_score(y_train,X_train_predict)\n",
+    "print(\"accuracy is\",training_data_acc)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "ae442c93",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-11-26T17:48:17.855964Z",
+     "iopub.status.busy": "2023-11-26T17:48:17.855460Z",
+     "iopub.status.idle": "2023-11-26T17:48:17.862906Z",
+     "shell.execute_reply": "2023-11-26T17:48:17.861609Z"
+    },
+    "papermill": {
+     "duration": 0.02165,
+     "end_time": "2023-11-26T17:48:17.865771",
+     "exception": false,
+     "start_time": "2023-11-26T17:48:17.844121",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "accuracy is 0.5633187772925764\n"
+     ]
+    }
+   ],
+   "source": [
+    "test_data_acc=accuracy_score(y_test,X_test_predict)\n",
+    "print(\"accuracy is\",test_data_acc)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "944f54a9",
+   "metadata": {
+    "papermill": {
+     "duration": 0.008803,
+     "end_time": "2023-11-26T17:48:17.884073",
+     "exception": false,
+     "start_time": "2023-11-26T17:48:17.875270",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kaggle": {
+   "accelerator": "none",
+   "dataSources": [
+    {
+     "datasetId": 1866301,
+     "sourceId": 3047725,
+     "sourceType": "datasetVersion"
+    }
+   ],
+   "dockerImageVersionId": 30587,
+   "isGpuEnabled": false,
+   "isInternetEnabled": false,
+   "language": "python",
+   "sourceType": "notebook"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.12"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 7.122176,
+   "end_time": "2023-11-26T17:48:18.517004",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2023-11-26T17:48:11.394828",
+   "version": "2.4.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
